@@ -1,3 +1,20 @@
+using FlyByWireless.GitCore;
+
+using HttpClient client = new(new AuthorizingHttpClientHandler());
+var upa = client.GetUploadPackAsync(new("https://user:token@github.com/wegylexy/git-core.git/"));
+await foreach (var p in upa)
+{
+    var r = p.Key;
+    if (r.StartsWith("refs/heads/"))
+    {
+        Console.WriteLine($"branch {r.AsSpan(11)} -> commit {p.Value.ToHexString()}");
+    }
+    else if (r.StartsWith("refs/tags/") && r.EndsWith("^{}"))
+    {
+        Console.WriteLine($"tag {r.AsSpan()[10..^3]} -> commit {p.Value.ToHexString()}");
+    }
+}
+
 # Prerequisites
 *.d
 
